@@ -1,0 +1,89 @@
+gcloud container clusters create \
+  --machine-type n1-standard-2 \
+  --num-nodes 2 \
+  --zone europe-west1-b \
+  --cluster-version latest \
+  kjupyter
+  
+kubectl get node
+
+kubectl create clusterrolebinding cluster-admin-binding \
+  --clusterrole=cluster-admin \
+  --user=gbrault@seadev.org
+  
+gcloud beta container node-pools create user-pool \
+  --machine-type n1-standard-2 \
+  --num-nodes 0 \
+  --enable-autoscaling \
+  --min-nodes 0 \
+  --max-nodes 3 \
+  --node-labels hub.jupyter.org/node-purpose=user \
+  --node-taints hub.jupyter.org_dedicated=user:NoSchedule \
+  --zone europe-west1-b \
+  --cluster kjupyter
+
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+
+kubectl --namespace kube-system create serviceaccount tiller
+
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+
+helm init --service-account tiller --wait
+
+kubectl patch deployment tiller-deploy --namespace=kube-system --type=json --patch='[{"op": "add", "path": "/spec/template/spec/containers/0/command", "value": ["/tiller", "--listen=localhost:44134"]}]'
+
+openssl rand -hex 32
+
+2eca4e61e593b12c112f28b2325e2a09748fc9339bd42f445b2ca22d6d67d089
+
+nano config.yaml
+
+proxy:
+  secretToken: "2eca4e61e593b12c112f28b2325e2a09748fc9339bd42f445b2ca22d6d67d089"
+  
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm repo update  
+
+# Suggested values: advanced users of Kubernetes and Helm should feel
+# free to use different values.
+RELEASE=jhub
+NAMESPACE=jhub
+
+helm upgrade --install $RELEASE jupyterhub/jupyterhub \
+  --namespace $NAMESPACE  \
+  --version=0.8.2 \
+  --values config.yaml
+  
+kubectl config set-context $(kubectl config current-context) --namespace ${NAMESPACE:-jhub}
+
+kubectl get service --namespace jhub
+kubectl describe service proxy-public --namespace jhub
+
+
+change config.yaml
+proxy:
+  https:
+    hosts:
+      - <your-domain-name>
+    letsencrypt:
+      contactEmail: <your-email-address>
+	  
+helm upgrade =>
+
+RELEASE=jhub
+
+helm upgrade $RELEASE jupyterhub/jupyterhub \
+  --version=0.8.2 \
+  --values config.yaml
+  
+change config.yaml
+	auth:
+	  type: github
+	  github:
+		clientId: "35ae74a01f9dfb02ac43"
+		clientSecret: "ef41bb4587e7e7f938f33bc4a757c19ba3b5ef56"
+		callbackUrl: "https://kjupyter.anticor-chimie.site/hub/oauth_callback"
+	    admin:
+		  access: true
+		  users:
+            - gbrault
