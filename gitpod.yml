@@ -1,8 +1,8 @@
 ports:
-- port: 8050
-  onOpen: open-preview
-- port: 8888
-  onOpen: open-browser
+  - port: 8050
+      onOpen: open-preview
+  - port: 8888
+      onOpen: open-browser
 tasks:
-- init: /workspace/jupyter/run.sh
-  command: cp -r /workspace/jupyter/.jupyter /home/gitpod/
+  - init: /workspace/jupyter/run.sh
+      command: cp -r /workspace/jupyter/.jupyter /home/gitpod/
