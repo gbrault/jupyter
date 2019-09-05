@@ -7,3 +7,5 @@ to run in gitpod
 - chmod +x run.sh
 - cp -r /workspace/jupyter/.jupyter /home/gitpod/
 - jupyter notebook (enter the GUID into the opening browser)
+
+**[Go to gitpod dashboard](https://gitpod.io/workspaces/) to check if an image is already there**
