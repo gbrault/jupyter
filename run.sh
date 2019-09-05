@@ -1,3 +1,3 @@
 # install dependencies
-pip3 install jupyter pandas matplotlib xlrd python-pptx
+pip3 install jupyter pandas matplotlib xlrd python-pptx pixiedust
 
