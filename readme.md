@@ -8,4 +8,4 @@ to run in gitpod
 - cp -r /workspace/jupyter/.jupyter /home/gitpod/
 - jupyter notebook (enter the GUID into the opening browser)
 
-**[Go to gitpod dashboard](https://gitpod.io/workspaces/) to check if an image is already there**
+[Go to gitpod dashboard](https://gitpod.io/workspaces/){:target="_blank"} **to check if an image is already there**
